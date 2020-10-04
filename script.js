@@ -68,9 +68,13 @@ window.addEventListener("resize", ()=>{
 
 //Map Otions BLock
 (()=>{
+    //map selection
+    const row1 = document.createElement("div");
+    row1.className = "row";
+
     const firstTitle = document.createElement("p");
     firstTitle.innerText = "Select Map:";
-    domMapOptions.appendChild(firstTitle);
+    row1.appendChild(firstTitle);
 
     mapOptions.list.forEach(_map => {
         const mapSelectBtn = document.createElement("input");
@@ -80,9 +84,30 @@ window.addEventListener("resize", ()=>{
             domImg.src = _map[1];
         }
 
-        domMapOptions.appendChild(mapSelectBtn);
+        row1.appendChild(mapSelectBtn);
     })
+    //==========
+    //clear canvas Button
+    const row2 = document.createElement("div");
+    row2.className = "row";
+
+    const secondTitle = document.createElement("p");
+    secondTitle.innerText = "Clear Canvas:";
+    row2.appendChild(secondTitle);
+
+    const clearCanvasBtn = document.createElement("input");
+    clearCanvasBtn.type = "button";
+    clearCanvasBtn.value = "Clear";
+    clearCanvasBtn.onclick = () => {
+        ctx.clearRect(0, 0, domCanvas.width, domCanvas.height);
+    }
+
+    row2.appendChild(clearCanvasBtn);
+
+    domMapOptions.appendChild(row1);
+    domMapOptions.appendChild(row2);
 })();
+
 //===========================
 // const debug = false;
 const debug = false;
