@@ -5,6 +5,7 @@ const domDotList = document.getElementById("dotList");
 const domPlayerCard = document.getElementById("playerCard");
 const domSidebar = document.getElementById("sidebar");
 const domSelectServer = createSidebarBlock("Select Server");
+const domMapOptions = createSidebarBlock("Map Options", false);
 const domSelectPlayer = createSidebarBlock("Filter Players", false);
 const domSelectJob = createSidebarBlock("Filter Jobs", false);
 const domToggleSidebarButton = document.getElementById("toggleSidebar");
@@ -18,17 +19,24 @@ const temporaryPlayersList = {};
 const activeFilterJobsList = [];
 const activeFilterPlayersList = [];
 const serversList = [
-    ["server.tycoon.community:30120","Server #1 (OneSync)"],
-    ["server.tycoon.community:30122","Server #2"],
-    ["server.tycoon.community:30123","Server #3"],
-    ["server.tycoon.community:30124","Server #4"],
-    ["server.tycoon.community:30125","Server #5 (Beta)"],
-    ["na.tycoon.community:30120","Server #6"],
-    ["na.tycoon.community:30122","Server #7"],
-    ["na.tycoon.community:30123","Server #8"],
-    ["na.tycoon.community:30124","Server #9"],
-    ["na.tycoon.community:30125","Server #A"]
+    {ip: "server.tycoon.community:30120", name: "Server #1 (OneSync)"},
+    {ip: "server.tycoon.community:30122", name: "Server #2"},
+    {ip: "server.tycoon.community:30123", name: "Server #3"},
+    {ip: "server.tycoon.community:30124", name: "Server #4"},
+    {ip: "server.tycoon.community:30125", name: "Server #5 (Beta)"},
+    {ip: "na.tycoon.community:30120", name: "Server #6"},
+    {ip: "na.tycoon.community:30122", name: "Server #7"},
+    {ip: "na.tycoon.community:30123", name: "Server #8"},
+    {ip: "na.tycoon.community:30124", name: "Server #9"},
+    {ip: "na.tycoon.community:30125", name: "Server #A"}
 ];
+const mapOptions = {
+    list: [
+        ["Dark Map", "https://supernovaplus.github.io/ttmap/images/maps/mapdarkmobile.jpg"],
+        ["Color Map", "https://supernovaplus.github.io/ttmap/images/maps/mobilemap.jpg"]
+    ],
+    selected: 0
+}
 var activeTimeout = null;
 const updateTime = 6000;
 var currentlySelectedServer = serversList[0];
@@ -57,33 +65,43 @@ window.addEventListener("resize", ()=>{
     toggleElementDisplay(domToggleSidebarButton)
     domToggleSidebarButton.onclick = () => toggleSidebar(checkbox, domSidebar);
 })();
+
+//Map Otions BLock
+(()=>{
+    const firstTitle = document.createElement("p");
+    firstTitle.innerText = "Select Map:";
+    domMapOptions.appendChild(firstTitle);
+
+    mapOptions.list.forEach(_map => {
+        const mapSelectBtn = document.createElement("input");
+        mapSelectBtn.type = "button";
+        mapSelectBtn.value = _map[0];
+        mapSelectBtn.onclick = () => {
+            domImg.src = _map[1];
+        }
+
+        domMapOptions.appendChild(mapSelectBtn);
+    })
+})();
 //===========================
 // const debug = false;
 const debug = false;
-// details.style.display = "flex";
-
-//Render Server List
-// const aasf = createSidebarBlock("test");
-// console.log(aasf)
 
 serversList.forEach((server, index) => {
     const rowElement = document.createElement("div");
     rowElement.className = "row";
 
     const inputText = document.createElement("p");
-    inputText.innerText = server[1];
+    inputText.innerText = server.name;
 
-    const playerCount = document.createElement("p");
-    playerCount.innerText = "(?)";
+    server.playerCount = document.createElement("p");
 
-    fetch(`http://${server[0]}/status/widget/players.json`).then(res=>res.json()).then(res=>{
-        if(res && res.players){
-            playerCount.innerText = `(${res.players.length})`;
-        }
-    }).catch(err=>{
-        console.error(err);
-        playerCount.innerText = `(offline)`;
-    })
+    if(window.location.protocol !== "https:"){
+        scanPlayerCount();
+        setInterval(()=>{
+            scanPlayerCount();
+        }, 1000*60*2);
+    }
 
     const inputRadio = document.createElement("input");
     inputRadio.type = "radio";
@@ -93,7 +111,7 @@ serversList.forEach((server, index) => {
 
     rowElement.appendChild(inputRadio);
     rowElement.appendChild(inputText);
-    rowElement.appendChild(playerCount);
+    rowElement.appendChild(server.playerCount);
     domSelectServer.appendChild(rowElement);
 });
 
@@ -140,24 +158,29 @@ domPlayerCard._close();
 //Close the player card when canvas is clicked
 domCanvas.onclick = domPlayerCard._close;
 //========================
-
+domImg.onload = ()=>{
+    console.log("image loaded");
+    window.scrollTo(0, domImg.width * 0.5);
+    domImg.onload = null;
+}
 //once image loaded start the update
-domImg.addEventListener("load",()=>{
-    console.log("image loaded")
-    window.scrollTo(0, domImg.width * 0.5)
-})
+// domImg.addEventListener("load",()=>{
+//     console.log("image loaded")
+//     window.scrollTo(0, domImg.width * 0.5)
+// })
 //========================
 
 update();
 function update(){
-    // fetch("http://54.37.88.125:30123/status/map/positions.json")
-    let fetchLink = "https://novaplus.herokuapp.com/positions/" + currentlySelectedServer[0];
+    let fetchLink = "https://novaplus.herokuapp.com/positions/" + currentlySelectedServer.ip;
     if(debug) fetchLink = "./data.json";
     fetch(fetchLink).then(res=>res.json()).then(res => {
         if(!res || (res && !res.data)){
-            // errors.innerText = "Server Error"
+            currentlySelectedServer.playerCount.innerText = "(error)";
             return;
         }
+        currentlySelectedServer.playerCount.innerText = `(${res.data.players.length})`;
+
         for (let i = 0; i < res.data.players.length; i++) {
             const player = res.data.players[i];
             if(!player[3] || !player[0]) continue;
@@ -224,6 +247,17 @@ function update(){
             activeTimeout = setTimeout(update, updateTime);
         }, 10000);
     })
+}
+
+function scanPlayerCount(){
+    serversList.forEach((server, index) => {
+        fetch(`http://${server.ip}/status/widget/players.json`).then(res=>res.json()).then(res=>{
+            server.playerCount.innerText = `(${res.players.length || "?"})`;
+        }).catch(err=>{
+            console.error(err);
+            server.playerCount.innerText = `(offline)`;
+        })
+    });
 }
 
 function switchServer(server){
