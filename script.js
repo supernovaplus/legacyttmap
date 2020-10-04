@@ -40,6 +40,7 @@ const mapOptions = {
 var activeTimeout = null;
 const updateTime = 6000;
 var currentlySelectedServer = serversList[0];
+var serverSwitchingTimeout;
 
 const imageSize = { width: 2000, height: 2000 };
 const map_center_x = (imageSize.width * 0.5) - 75;
@@ -295,7 +296,14 @@ function switchServer(server){
     }
     activeFilterPlayersList.length = 0;
     clearCanvas();
-    update();
+
+    if(activeTimeout){
+        clearTimeout(activeTimeout);
+    }
+    serverSwitchingTimeout = setTimeout(()=>{
+        update();
+        serverSwitchingTimeout = null;
+    }, 2000)
 }
 
 function newRowCheckbox(target, value, onchange){
