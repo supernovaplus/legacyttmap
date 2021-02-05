@@ -67,7 +67,7 @@ window.addEventListener("resize", ()=>{
     domToggleSidebarButton.onclick = () => toggleSidebar(checkbox, domSidebar);
 })();
 
-//Map Otions BLock
+//Map Options Block
 (()=>{
     //map selection
     const row1 = document.createElement("div");
@@ -229,10 +229,10 @@ function update(){
             }
 
             if(playerObject){
-                const distance = Math.abs(position[0] - playerObject.lastPos[0]) + Math.abs(position[1] - playerObject.lastPos[1]);
-                if(distance < 200){
-                    drawLine(playerObject, position);
-                }
+                // const distance = getDistance(position, playerObject.lastPos);
+                // if(distance < 200){
+                //     drawLine(playerObject, position);
+                // }
                 playerObject.lastPos = position;
                 playerObject.lastUpdated = Date.now();
             }else{ // initialize new
@@ -256,6 +256,31 @@ function update(){
                     permanentJobsList[jobName] = newRowCheckbox(domSelectJob, jobName, filterJobs);
                 }
             }
+
+            if(player[6] && player[6].length > 1){
+                for (let i = 1; i < player[6].length; i++) {
+                    const _lastPos = player[6][i-1];
+                    const _currentPos = player[6][i];
+                    if(getDistance([_lastPos[1], _lastPos[2]], [_currentPos[1], _currentPos[2]]) < 500){
+                        drawLine2(playerObject, 
+                            coordsToMap(_lastPos[1], _lastPos[2]),
+                            coordsToMap(_currentPos[1], _currentPos[2])
+                            )
+                    }else{
+                        // console.log(getDistance([_lastPos[1], _lastPos[2]], [_currentPos[1], _currentPos[2]]));
+                    }
+                    
+                    // playersData[player[2]].lastPos = coordsToMap(_currentPos[1], _currentPos[2]);
+
+                    // if(_nextPos){
+                    //     drawLine2(playerObject, 
+                    //         coordsToMap(_newPos[1], _newPos[2])
+                    //         coordsToMap(_nextPos[1], _nextPos[2]),
+                    //         )
+                    // }
+                }
+            }
+            
             //set new dot position
             playerObject.dot.style.top = (position[1] - 5) +"px";
             playerObject.dot.style.left = (position[0] - 5) + "px";
@@ -273,6 +298,10 @@ function update(){
             activeTimeout = setTimeout(update, updateTime);
         }, 10000);
     })
+}
+
+function getDistance(position1, position2){
+    return Math.abs(position1[0] - position2[0]) + Math.abs(position1[1] - position2[1]);
 }
 
 function scanPlayerCount(){
@@ -294,12 +323,14 @@ function switchServer(server){
         temporaryPlayersList[key].parentElement.remove();
         delete temporaryPlayersList[key];
     }
+
     activeFilterPlayersList.length = 0;
     clearCanvas();
 
     if(activeTimeout){
         clearTimeout(activeTimeout);
     }
+
     serverSwitchingTimeout = setTimeout(()=>{
         update();
         serverSwitchingTimeout = null;
@@ -365,8 +396,8 @@ function coordsToMap(_x, _y){
     return [(_x / scale) + map_center_x, (_y / -scale) + map_center_y];
 }
 
+const color_letters = '0123456789ABCDEF';
 function getRandomColor() { //https://stackoverflow.com/a/1484514/9601483
-    const color_letters = '0123456789ABCDEF';
     let color = '#';
     for (var i = 0; i < 6; i++) { color += color_letters[Math.floor(Math.random() * 16)]; }
     return color;
@@ -377,6 +408,16 @@ function drawLine(player, newPos){
     ctx.beginPath();
     ctx.lineWidth = 2;
     ctx.moveTo(player.lastPos[0], player.lastPos[1]);
+    ctx.lineTo(newPos[0], newPos[1]);
+    ctx.strokeStyle = player.color;
+    ctx.stroke();
+}
+
+function drawLine2(player, oldPos, newPos){
+    if(!player || !newPos) return;
+    ctx.beginPath();
+    ctx.lineWidth = 2;
+    ctx.moveTo(oldPos[0], oldPos[1]);
     ctx.lineTo(newPos[0], newPos[1]);
     ctx.strokeStyle = player.color;
     ctx.stroke();
