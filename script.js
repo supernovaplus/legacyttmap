@@ -12,7 +12,6 @@ const domToggleSidebarButton = document.getElementById("toggleSidebar");
 // const playersCount = document.getElementById("playersCount");
 // const errors = document.getElementById("errors");
 
-const scale = 6.8;
 const playersData = {};
 const permanentJobsList = {};
 const temporaryPlayersList = {};
@@ -37,14 +36,16 @@ const mapOptions = {
     ],
     selected: 0
 }
-var activeTimeout = null;
+let activeTimeout = null;
 const updateTime = 6000;
-var currentlySelectedServer = serversList[0];
-var serverSwitchingTimeout;
+let currentlySelectedServer = serversList[0];
+let serverSwitchingTimeout;
 
-const imageSize = { width: 2000, height: 2000 };
-const map_center_x = (imageSize.width * 0.5) - 75;
-const map_center_y = (imageSize.height * 0.5) + 318;
+//first find the zero position, then scale the image
+const imageSize = { width: 2304, height: 2304 };
+const map_center_x = (imageSize.width * 0.5) - 53;
+const map_center_y = (imageSize.height * 0.5) + 346;
+const scale = 6.05;
 domCanvas.width = imageSize.width;
 domCanvas.height = imageSize.height;
 
@@ -52,7 +53,6 @@ domSidebar.style.maxHeight = window.innerHeight - 50 + "px";
 window.addEventListener("resize", ()=>{
     domSidebar.style.maxHeight = window.innerHeight - 50 + "px";
 });
-
 
 //Toggle Options Button
 (()=>{
@@ -110,9 +110,6 @@ window.addEventListener("resize", ()=>{
 })();
 
 //===========================
-// const debug = false;
-const debug = false;
-
 serversList.forEach((server, index) => {
     const rowElement = document.createElement("div");
     rowElement.className = "row";
@@ -195,11 +192,20 @@ domImg.onload = ()=>{
 //     window.scrollTo(0, domImg.width * 0.5)
 // })
 //========================
+// 0,0 position for scaling image
+// drawLine2({color: "red"}, 
+//     coordsToMap(0, -500),
+//     coordsToMap(0, 500)
+// )
+
+// drawLine2({color: "red"}, 
+//     coordsToMap(-500, 0),
+//     coordsToMap(500, 0)
+// )
 
 update();
 function update(){
     let fetchLink = "https://novaplus.herokuapp.com/positions/" + currentlySelectedServer.ip;
-    if(debug) fetchLink = "./data.json";
     fetch(fetchLink).then(res=>res.json()).then(res => {
         if(!res || (res && !res.data)){
             currentlySelectedServer.playerCount.innerText = "(error)";
@@ -229,10 +235,6 @@ function update(){
             }
 
             if(playerObject){
-                // const distance = getDistance(position, playerObject.lastPos);
-                // if(distance < 200){
-                //     drawLine(playerObject, position);
-                // }
                 playerObject.lastPos = position;
                 playerObject.lastUpdated = Date.now();
             }else{ // initialize new
@@ -263,25 +265,18 @@ function update(){
                     const _currentPos = player[6][i];
                     if(getDistance([_lastPos[1], _lastPos[2]], [_currentPos[1], _currentPos[2]]) < 500){
                         drawLine2(playerObject, 
-                            coordsToMap(_lastPos[1], _lastPos[2]),
-                            coordsToMap(_currentPos[1], _currentPos[2])
+                                coordsToMap(_lastPos[1], _lastPos[2]),
+                                coordsToMap(_currentPos[1], _currentPos[2])
                             )
-                    }else{
-                        // console.log(getDistance([_lastPos[1], _lastPos[2]], [_currentPos[1], _currentPos[2]]));
                     }
-                    
-                    // playersData[player[2]].lastPos = coordsToMap(_currentPos[1], _currentPos[2]);
-
-                    // if(_nextPos){
-                    //     drawLine2(playerObject, 
-                    //         coordsToMap(_newPos[1], _newPos[2])
-                    //         coordsToMap(_nextPos[1], _nextPos[2]),
-                    //         )
-                    // }
                 }
             }
             
             //set new dot position
+            // ctx.beginPath();
+            // ctx.arc(position[0], position[1], .5, 0, 2 * Math.PI);
+            // ctx.stroke(); 
+
             playerObject.dot.style.top = (position[1] - 5) +"px";
             playerObject.dot.style.left = (position[0] - 5) + "px";
         }
@@ -399,7 +394,7 @@ function coordsToMap(_x, _y){
 const color_letters = '0123456789ABCDEF';
 function getRandomColor() { //https://stackoverflow.com/a/1484514/9601483
     let color = '#';
-    for (var i = 0; i < 6; i++) { color += color_letters[Math.floor(Math.random() * 16)]; }
+    for (let i = 0; i < 6; i++) { color += color_letters[Math.floor(Math.random() * 16)]; }
     return color;
 }
 
