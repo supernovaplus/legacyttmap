@@ -110,6 +110,7 @@ window.addEventListener("resize", ()=>{
 })();
 
 //===========================
+
 serversList.forEach((server, index) => {
     const rowElement = document.createElement("div");
     rowElement.className = "row";
