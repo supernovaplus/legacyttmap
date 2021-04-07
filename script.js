@@ -206,7 +206,7 @@ domImg.onload = ()=>{
 
 update();
 function update(){
-    let fetchLink = "https://novaplus.herokuapp.com/positions/" + currentlySelectedServer.ip;
+    let fetchLink = "https://novaplus-api.herokuapp.com/positions/" + currentlySelectedServer.ip;
     fetch(fetchLink).then(res=>res.json()).then(res => {
         if(!res || (res && !res.data)){
             currentlySelectedServer.playerCount.innerText = "(error)";
