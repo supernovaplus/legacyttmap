@@ -17,18 +17,18 @@ const permanentJobsList = {};
 const temporaryPlayersList = {};
 const activeFilterJobsList = [];
 const activeFilterPlayersList = [];
-const serversList = [
-    {ip: "server.tycoon.community:30120", name: "Server #1 (OneSync)"},
-    {ip: "server.tycoon.community:30122", name: "Server #2"},
-    {ip: "server.tycoon.community:30123", name: "Server #3"},
-    {ip: "server.tycoon.community:30124", name: "Server #4"},
-    {ip: "server.tycoon.community:30125", name: "Server #5 (Beta)"},
-    {ip: "na.tycoon.community:30120", name: "Server #6"},
-    {ip: "na.tycoon.community:30122", name: "Server #7"},
-    {ip: "na.tycoon.community:30123", name: "Server #8"},
-    {ip: "na.tycoon.community:30124", name: "Server #9"},
-    {ip: "na.tycoon.community:30125", name: "Server #A"}
-];
+serversList = [
+    ["Server #1 (OneSync)",  "w8r4q4"],
+    ["Server #2",            "2epova"],
+    ["Server #3",            "2epovd"],
+    ["Server #4",            "wdrypd"],
+    ["Server #5 (Beta)",     "njyvop"],
+    ["Server #6",            "2r4588"],
+    ["Server #7",            "npl5oy"],
+    ["Server #8",            "2vzlde"],
+    ["Server #9",            "wmapod"],
+    ["Server #A",            "wxjpge"]
+]
 const mapOptions = {
     list: [
         ["Dark Map", "https://supernovaplus.github.io/ttmap/images/maps/mapdarkmobile.jpg"],
@@ -116,7 +116,7 @@ serversList.forEach((server, index) => {
     rowElement.className = "row";
 
     const inputText = document.createElement("p");
-    inputText.innerText = server.name;
+    inputText.innerText = server[0];
 
     server.playerCount = document.createElement("p");
 
@@ -206,7 +206,7 @@ domImg.onload = ()=>{
 
 update();
 function update(){
-    let fetchLink = "https://novaplus-api.herokuapp.com/positions/" + currentlySelectedServer.ip;
+    let fetchLink = "https://novaplus-api.herokuapp.com/positions/" + currentlySelectedServer[1];
     fetch(fetchLink).then(res=>res.json()).then(res => {
         if(!res || (res && !res.data)){
             currentlySelectedServer.playerCount.innerText = "(error)";
@@ -301,14 +301,14 @@ function getDistance(position1, position2){
 }
 
 function scanPlayerCount(){
-    serversList.forEach((server, index) => {
-        fetch(`http://${server.ip}/status/widget/players.json`).then(res=>res.json()).then(res=>{
-            server.playerCount.innerText = `(${res.players.length || "?"})`;
-        }).catch(err=>{
-            console.error(err);
-            server.playerCount.innerText = `(offline)`;
-        })
-    });
+    // serversList.forEach((server, index) => {
+    //     fetch(`http://${server.ip}/status/widget/players.json`).then(res=>res.json()).then(res=>{
+    //         server.playerCount.innerText = `(${res.players.length || "?"})`;
+    //     }).catch(err=>{
+    //         console.error(err);
+    //         server.playerCount.innerText = `(offline)`;
+    //     })
+    // });
 }
 
 function switchServer(server){
