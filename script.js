@@ -413,11 +413,20 @@ function drawLine(player, newPos){
 
 function drawLine2(player, oldPos, newPos){
     if(!player || !newPos) return;
+
+    ctx.beginPath();
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
+    ctx.lineWidth = 3;
+    ctx.moveTo(oldPos[0] + 1, oldPos[1] + 1);
+    ctx.lineTo(newPos[0] + 1, newPos[1] + 1);
+    ctx.stroke();
+
     ctx.beginPath();
     ctx.lineWidth = 2;
     ctx.moveTo(oldPos[0], oldPos[1]);
     ctx.lineTo(newPos[0], newPos[1]);
     ctx.strokeStyle = player.color;
+
     ctx.stroke();
 }
 
