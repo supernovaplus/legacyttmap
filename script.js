@@ -34,7 +34,7 @@ const mapOptions = {
         ["Dark Map", "https://supernovaplus.github.io/ttmap/images/maps/mapdarkmobile.jpg"],
         ["Color Map", "https://supernovaplus.github.io/ttmap/images/maps/mobilemap.jpg"]
     ],
-    selected: 0
+    selected: 1
 }
 let activeTimeout = null;
 const updateTime = 6000;
