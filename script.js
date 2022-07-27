@@ -17,17 +17,17 @@ const permanentJobsList = {};
 const temporaryPlayersList = {};
 const activeFilterJobsList = [];
 const activeFilterPlayersList = [];
-serversList = [
-    ["Server #1 (OneSync)",  "w8r4q4"],
+const serversList = [
+    // ["Server #1 (OneSync)",  "w8r4q4"],
     ["Server #2",            "2epova"],
-    ["Server #3",            "2epovd"],
-    ["Server #4",            "wdrypd"],
+    // ["Server #3",            "2epovd"],
+    // ["Server #4",            "wdrypd"],
     ["Server #5 (Beta)",     "njyvop"],
-    ["Server #6",            "2r4588"],
-    ["Server #7",            "npl5oy"],
-    ["Server #8",            "2vzlde"],
-    ["Server #9",            "wmapod"],
-    ["Server #A",            "wxjpge"]
+    // ["Server #6",            "2r4588"],
+    // ["Server #7",            "npl5oy"],
+    // ["Server #8",            "2vzlde"],
+    // ["Server #9",            "wmapod"],
+    // ["Server #A",            "wxjpge"]
 ]
 const mapOptions = {
     list: [
@@ -42,10 +42,12 @@ let currentlySelectedServer = serversList[0];
 let serverSwitchingTimeout;
 
 //first find the zero position, then scale the image
-const imageSize = { width: 2304, height: 2304 };
-const map_center_x = (imageSize.width * 0.5) - 53;
-const map_center_y = (imageSize.height * 0.5) + 346;
-const scale = 6.05;
+const imageScale = 1;
+const imageSize = { width: 2304 * imageScale, height: 2304 * imageScale};
+const map_center_x = (imageSize.width * 0.5) - (51.5 * imageScale);
+const map_center_y = (imageSize.height * 0.5) + (346 * imageScale);
+const scale = 6.05 / imageScale;
+
 domCanvas.width = imageSize.width;
 domCanvas.height = imageSize.height;
 
