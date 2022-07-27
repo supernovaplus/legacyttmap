@@ -290,11 +290,11 @@ function update(){
 
         playersCleanup();
         activeTimeout = setTimeout(update, updateTime);
-    }).catch(err=>{
+    }).catch(err => {
         console.log(err);
-        setTimeout(()=>{
+        // setTimeout(()=>{
             activeTimeout = setTimeout(update, updateTime);
-        }, 10000);
+        // }, 10000);
     })
 }
 
