@@ -22,7 +22,7 @@ const serversList = [
     ["Server #2",            "2epova"],
     // ["Server #3",            "2epovd"],
     // ["Server #4",            "wdrypd"],
-    ["Server #5 (Beta)",     "njyvop"],
+    // ["Server #5 (Beta)",     "njyvop"],
     // ["Server #6",            "2r4588"],
     // ["Server #7",            "npl5oy"],
     // ["Server #8",            "2vzlde"],
@@ -208,7 +208,7 @@ domImg.onload = ()=>{
 
 update();
 function update(){
-    let fetchLink = "https://novaplus-api.herokuapp.com/positions/" + currentlySelectedServer[1];
+    let fetchLink = "https://d.ttstats.eu/positions/" + currentlySelectedServer[1];
     fetch(fetchLink).then(res=>res.json()).then(res => {
         if(!res || (res && !res.data)){
             currentlySelectedServer.playerCount.innerText = "(error)";
